@@ -1,15 +1,15 @@
-import { Withdraw, SetAtmError } from './actions/atm.actions';
+import { Withdrawal, SubmitTransaction } from './actions/atm.actions';
 import { State, Action, StateContext, Store } from '@ngxs/store';
 import { Bill } from 'src/shared/models/bill-type.model';
 import { BillType } from 'src/shared/models/bill-type.enum';
 import { AtmUtility } from 'src/shared/services/atm-utility.service';
 import { AtmError } from 'src/shared/models/atm-error.enum';
-import { patch } from '@ngxs/store/operators';
+import { Injectable } from '@angular/core';
 export interface AtmStateModel {
   remainingAmount: Bill[];
-  error: AtmError;
-  transactions: Bill[];
+  transactions: (Bill[] | AtmError)[];
 }
+@Injectable()
 @State<AtmStateModel>({
   name: 'atm',
   defaults: {
@@ -21,19 +21,16 @@ export interface AtmStateModel {
       new Bill(BillType.FIVE, 5, 0),
       new Bill(BillType.ONE, 1, 0)
     ],
-    transactions: [
-
-    ]
-    error: null
+    transactions: []
   }
 })
 export class AtmState {
   constructor(private store: Store) {}
 
-  @Action(Withdraw)
+  @Action(Withdrawal)
   withdraw(
     ctx: StateContext<AtmStateModel>,
-    { requestedValue }: Withdraw
+    { requestedValue }: Withdrawal
   ): void {
     const atmState = ctx.getState();
     // first check if the atm has enough funds
@@ -41,14 +38,29 @@ export class AtmState {
       !AtmUtility.enoughFundsRemaining(atmState.remainingAmount, requestedValue)
     ) {
       // if not set an error
-      this.store.dispatch(new SetAtmError(AtmError.INSUFFICIENT_FUNDS));
+      this.store.dispatch(new SubmitTransaction(AtmError.INSUFFICIENT_FUNDS));
     } else {
-      // if were good to go see if we can complete the transaction.
-      // this
+      const billsToDispense = AtmUtility.getBillsForWithdrawal(
+        atmState.remainingAmount,
+        requestedValue
+      );
+      // check to see if we were able to make change
+      if (!billsToDispense) {
+        this.store.dispatch(
+          new SubmitTransaction(AtmError.UNABLE_TO_MAKE_CHANGE)
+        );
+      } else {
+        this.store.dispatch(new SubmitTransaction(billsToDispense));
+      }
     }
   }
-  @Action(SetAtmError)
-  SetAtmError(ctx: StateContext<AtmStateModel>, { error }: SetAtmError): void {
-    ctx.patchState({ error });
+  @Action(SubmitTransaction)
+  SubmitTransaction(
+    ctx: StateContext<AtmStateModel>,
+    { result }: SubmitTransaction
+  ): void {
+    const atmState = ctx.getState();
+    const updatedTransactions = [...atmState.transactions, result];
+    ctx.patchState({ transactions: updatedTransactions });
   }
 }

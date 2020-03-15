@@ -2,10 +2,6 @@ import { Bill } from '../models/bill-type.model';
 import { BillType } from '../models/bill-type.enum';
 
 export class AtmUtility {
-  static withdraw(remainingAmount: Bill[], requestedAmount: number) {
-    console.log(remainingAmount, requestedAmount);
-  }
-
   /**
    * Determines if enough founds exist for the transaction.
    */
@@ -25,7 +21,6 @@ export class AtmUtility {
   }
   /**
    * Have it start at each bill type
-
    */
   static getBillsForWithdrawal(
     remainingBills: Bill[],
@@ -40,10 +35,6 @@ export class AtmUtility {
       new Bill(BillType.ONE, 1, 0)
     ]
       .map(startValue => {
-        if (remainingBills.length < 1) {
-          return;
-        }
-
         const response = AtmUtility.getBillsForWithdrawHelper(
           AtmUtility.makeClone(remainingBills),
           requestedAmount,
@@ -96,7 +87,7 @@ export class AtmUtility {
   /**
    * One flaw of using classes with recursive calls is that the objects
    * being passed in don't clone easily.
-   * This was a solution to make them act immutable
+   * This was a solution to make them act immutable.
    *
    */
   private static makeClone(original: Bill[]) {

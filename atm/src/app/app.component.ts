@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
     this.atm$.subscribe(atm => {
       const remainingAmount = [...atm.remainingAmount];
 
-      console.log(AtmUtility.getBillsForWithdrawal(remainingAmount, 260));
+      console.log(AtmUtility.getBillsForWithdrawal(remainingAmount, 140));
     });
   }
 }
