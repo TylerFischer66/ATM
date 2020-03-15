@@ -1,1 +1,27 @@
-<p>withdrawal works!</p>
+<div class="container">
+  <div class="row mt-3">
+    <h2 class="col-12 text-center">Please enter withdrawal amount.</h2>
+    <h3 class="col-12 text-center">{{amount$ | async | currency}}</h3>
+  </div>
+</div>
+<ng-container *ngIf="submitted$ | async">
+  <h4
+    class="col-12 text-center error"
+    *ngIf="!noTransactionError(latestTransaction$ | async)">
+    there was an error.
+  </h4>
+  <ng-container *ngIf="noTransactionError(latestTransaction$ | async)">
+    <h5 class="col-12 text-center">The Atm is dispensing</h5>
+    <ng-container *ngFor="let billType of latestTransaction$ | async">
+      <div
+        class="text-center"
+        *ngIf="billType.amount > 0">
+        <span>
+          {{billType.amount}} {{billType.multiplier}} dollar
+          <ng-container *ngIf="billType.amount === 1">bill</ng-container>
+          <ng-container *ngIf="billType.amount > 1">bills</ng-container>
+        </span>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-container>

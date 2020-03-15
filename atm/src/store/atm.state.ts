@@ -1,4 +1,9 @@
-import { Withdrawal, SubmitTransaction } from './actions/atm.actions';
+import {
+  Withdrawal,
+  SubmitTransaction,
+  WithdrawalKeyPress,
+  ClearWithdrawalSubmission
+} from './actions/atm.actions';
 import { State, Action, StateContext, Store } from '@ngxs/store';
 import { Bill } from 'src/shared/models/bill-type.model';
 import { BillType } from 'src/shared/models/bill-type.enum';
@@ -8,6 +13,8 @@ import { Injectable } from '@angular/core';
 export interface AtmStateModel {
   remainingAmount: Bill[];
   transactions: (Bill[] | AtmError)[];
+  withdrawalAmount: number[];
+  submitted: boolean;
 }
 @Injectable()
 @State<AtmStateModel>({
@@ -16,17 +23,18 @@ export interface AtmStateModel {
     remainingAmount: [
       new Bill(BillType.HUNDRED, 100, 10),
       new Bill(BillType.FIFTY, 50, 10),
-      new Bill(BillType.TWENTY, 20, 0),
+      new Bill(BillType.TWENTY, 20, 10),
       new Bill(BillType.TEN, 10, 10),
-      new Bill(BillType.FIVE, 5, 0),
-      new Bill(BillType.ONE, 1, 0)
+      new Bill(BillType.FIVE, 5, 10),
+      new Bill(BillType.ONE, 1, 10)
     ],
-    transactions: []
+    transactions: [],
+    withdrawalAmount: [],
+    submitted: false
   }
 })
 export class AtmState {
   constructor(private store: Store) {}
-
   @Action(Withdrawal)
   withdraw(
     ctx: StateContext<AtmStateModel>,
@@ -55,12 +63,39 @@ export class AtmState {
     }
   }
   @Action(SubmitTransaction)
-  SubmitTransaction(
+  submitTransaction(
     ctx: StateContext<AtmStateModel>,
     { result }: SubmitTransaction
   ): void {
     const atmState = ctx.getState();
-    const updatedTransactions = [...atmState.transactions, result];
-    ctx.patchState({ transactions: updatedTransactions });
+    atmState.transactions = [...atmState.transactions, result];
+    atmState.submitted = true;
+    ctx.setState({ ...atmState });
+  }
+  @Action(ClearWithdrawalSubmission)
+  clearWithdrawalSubmission(ctx: StateContext<AtmStateModel>) {
+    const atmState = ctx.getState();
+    ctx.patchState({ withdrawalAmount: [], submitted: false });
+  }
+
+  @Action(WithdrawalKeyPress)
+  withdrawalKeyPress(
+    ctx: StateContext<AtmStateModel>,
+    { key }: WithdrawalKeyPress
+  ) {
+    const atmState = ctx.getState();
+    if (key === 'clear') {
+      this.store.dispatch(new ClearWithdrawalSubmission());
+    } else if (key === 'submit') {
+      this.store.dispatch(
+        new Withdrawal(
+          AtmUtility.convertWithdrawalAmountToNumber(atmState.withdrawalAmount)
+        )
+      );
+    } else {
+      ctx.patchState({
+        withdrawalAmount: [...atmState.withdrawalAmount, Number(key)]
+      });
+    }
   }
 }

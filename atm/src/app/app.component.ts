@@ -15,8 +15,6 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.atm$.subscribe(atm => {
       const remainingAmount = [...atm.remainingAmount];
-
-      console.log(AtmUtility.getBillsForWithdrawal(remainingAmount, 140));
     });
   }
 }

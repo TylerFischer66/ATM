@@ -2,6 +2,9 @@ import { Bill } from '../models/bill-type.model';
 import { BillType } from '../models/bill-type.enum';
 
 export class AtmUtility {
+  static convertWithdrawalAmountToNumber(withdrawalAmount: number[]) {
+    return Number(withdrawalAmount.join(''));
+  }
   /**
    * Determines if enough founds exist for the transaction.
    */

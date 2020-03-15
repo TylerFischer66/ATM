@@ -1,10 +1,22 @@
-<div class="container">
-  <div class="row">
-    <div class="col-3">hello</div>
-    <div class="col-3">hello</div>
-    <div class="col-3">hello</div>
-    <div class="col-3">hello</div>
+<div class="container atm fixed-bottom">
+  <div class="row atm-header mt-4">
+    <div class="col-12 d-flex justify-content-center">
+      <img src="assets/atm-text.png">
+    </div>
   </div>
-  <button class="btn">hello</button>
+  <div class="row atm-face">
+    <div class="row atm-screen col-8 offset-2">
+      <div class="w-100">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+    <div class="col-2 my-auto">
+      <app-navigation></app-navigation>
+    </div>
+  </div>
+  <div class="row atm-base">
+    <div class="offset-4 col-4">
+      <app-keypad></app-keypad>
+    </div>
+  </div>
 </div>
-<pre>{{atm$ | async | json}}</pre>
