@@ -73,19 +73,24 @@ export class AtmUtility {
       );
     }
     // couldn't get the amount on the current bill so move on to the next one
-    if (remainingBills.length > 1) {
+    let response;
+    while (remainingBills.length > 1) {
       // moving to the next bill type
       remainingBills.shift();
 
       billsUsed.push(
         new Bill(remainingBills[0].name, remainingBills[0].multiplier, 0)
       );
-      return this.getBillsForWithdrawHelper(
+      response = this.getBillsForWithdrawHelper(
         AtmUtility.makeClone(remainingBills),
         requestedAmount,
         AtmUtility.makeClone(billsUsed)
       );
+      if (response) {
+        break;
+      }
     }
+    return response;
   }
   /**
    * One flaw of using classes with recursive calls is that the objects

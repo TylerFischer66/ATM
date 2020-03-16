@@ -15,6 +15,7 @@ import { AtmUtility } from 'src/shared/services/atm-utility.service';
 import { AtmError } from 'src/shared/models/atm-error.enum';
 import { Injectable } from '@angular/core';
 import { Transaction } from 'src/shared/models/transaction.model';
+import { tokenReference } from '@angular/compiler';
 export interface AtmStateModel {
   remainingAmount: Bill[];
   transactions: Transaction[];
@@ -31,10 +32,10 @@ export interface AtmStateModel {
     remainingAmount: [
       new Bill(BillType.HUNDRED, 100, 10),
       new Bill(BillType.FIFTY, 50, 10),
-      new Bill(BillType.TWENTY, 20, 3),
-      new Bill(BillType.TEN, 10, 0),
-      new Bill(BillType.FIVE, 5, 0),
-      new Bill(BillType.ONE, 1, 0)
+      new Bill(BillType.TWENTY, 20, 10),
+      new Bill(BillType.TEN, 10, 10),
+      new Bill(BillType.FIVE, 5, 10),
+      new Bill(BillType.ONE, 1, 10)
     ],
     transactions: [],
     withdrawalAmount: [],
@@ -96,6 +97,7 @@ export class AtmState {
         );
       }
     }
+    ctx.patchState({ withdrawalAmount: [] });
   }
 
   @Action(SubmitTransaction)
