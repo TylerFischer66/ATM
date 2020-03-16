@@ -30,7 +30,11 @@ export class KeypadComponent implements OnInit {
       .select(state => state.atm.depositAmount)
       .pipe(map(amount => amount.length > 0));
   }
-
+  /**
+   * When the user presses a key this method determines what to do
+   * based off of key type and page.
+   *
+   */
   onKeyPress(key: string | number): void {
     const currentPage = this.store.selectSnapshot(state => state.atm.page);
     if (currentPage === 'withdrawal') {

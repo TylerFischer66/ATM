@@ -1,8 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { Store, Select } from '@ngxs/store';
-import { AtmState, AtmStateModel } from 'src/store/atm.state';
-import { AtmUtility } from 'src/shared/services/atm-utility.service';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',

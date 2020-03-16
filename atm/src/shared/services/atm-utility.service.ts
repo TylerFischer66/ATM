@@ -29,25 +29,17 @@ export class AtmUtility {
     remainingBills: Bill[],
     requestedAmount: number
   ): Bill[] {
-    return [
-      new Bill(BillType.HUNDRED, 100, 0),
-      new Bill(BillType.FIFTY, 50, 0),
-      new Bill(BillType.TWENTY, 20, 0),
-      new Bill(BillType.TEN, 10, 0),
-      new Bill(BillType.FIVE, 5, 0),
-      new Bill(BillType.ONE, 1, 0)
-    ]
-      .map(startValue => {
-        const response = AtmUtility.getBillsForWithdrawHelper(
-          AtmUtility.makeClone(remainingBills),
-          requestedAmount,
-          [startValue]
-        );
-        remainingBills.shift();
-        return response;
-      })
-      .find(hasValue => hasValue);
+    return AtmUtility.getBillsForWithdrawHelper(
+      AtmUtility.makeClone(remainingBills),
+      requestedAmount,
+      [new Bill(BillType.HUNDRED, 100, 0)]
+    );
   }
+  /**
+   * A recursive greedy algorithm that will try to take as many
+   * of the highest bills that it can. If it fails it will move
+   * on to the next bill type.
+   */
   static getBillsForWithdrawHelper(
     remainingBills: Bill[],
     requestedAmount: number,
