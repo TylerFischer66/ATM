@@ -1,21 +1,21 @@
-<div class="container atm fixed-bottom">
-  <div class="row atm-header mt-4">
-    <div class="col-12 d-flex justify-content-center">
-      <img src="assets/atm-text.png">
-    </div>
+<div class="container fixed-bottom">
+  <div class="row atm-header d-flex justify-content-center">
+    <img src="assets/atm-text.png">
   </div>
-  <div class="row atm-face">
-    <div class="row atm-screen col-12 col-lg-8 offset-lg-2">
-      <div class="w-100">
-        <router-outlet></router-outlet>
-      </div>
+  <div class="row">
+    <div class="col-1 atm-color"></div>
+    <div class="col atm-screen">
+      <router-outlet></router-outlet>
     </div>
-    <div class="col-lg-2 col-12 my-auto">
+    <div class="col-1 atm-color"></div>
+  </div>
+  <div class="row atm-secondary-color">
+    <div class="col-12">
       <app-navigation></app-navigation>
     </div>
   </div>
-  <div class="row atm-base">
-    <div class="offset-4 col-4">
+  <div class="row atm-secondary-color atm-base">
+    <div class="offset-lg-4 col-lg-4 col-6 offset-3">
       <app-keypad></app-keypad>
     </div>
   </div>

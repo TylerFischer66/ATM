@@ -1,24 +1,13 @@
 .atm-screen {
-  min-height: 400px;
-  max-height: 400px;
-  width: 100%;
-
+  min-height: 300px;
+  max-height: 300px;
   overflow-y: scroll;
   background-color: lightblue;
   border: 1px solid #888888;
 }
-.atm-face {
-  padding-top: 25px;
-  padding-bottom: 25px;
-  background-color: rgb(124, 124, 124);
-  border-top: 2px solid #888888;
-  border-bottom: 2px solid #888888;
-}
 .atm-header {
   background-color: rgb(180, 180, 180);
 }
-
 .atm-base {
-  background-color: rgb(180, 180, 180);
-  height: 500px;
+  padding-bottom: 20%;
 }

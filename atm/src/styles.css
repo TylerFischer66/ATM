@@ -3,7 +3,7 @@
   background-image: url(assets/brick-background.jpg);
 }
 h2 {
-  font-size: 30px !important;
+  font-size: 25px !important;
 }
 .success {
   color: green;
@@ -13,4 +13,10 @@ h2 {
 }
 .info {
   color: purple;
+}
+.atm-color {
+  background-color: #888888;
+}
+.atm-secondary-color {
+  background-color: rgb(180, 180, 180);
 }
