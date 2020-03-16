@@ -1,5 +1,7 @@
 .atm-screen {
-  min-height: 25vh;
+  min-height: 400px;
+  max-height: 400px;
+  overflow-y: scroll;
   background-color: lightblue;
   border: 1px solid #888888;
 }

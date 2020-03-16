@@ -1,1 +1,36 @@
-{{transactions$ | async | json}}
+<div class="d-flex justify-content center">
+
+  <div class="w-50">
+    <div class="row">
+      <h2 class="col-12 text-center">ATM overview</h2>
+    </div>
+    <div class="row">
+      <h5
+        class="col-12"
+        *ngFor="let bill of remainingAmount$ | async">
+        There are {{bill.amount}} {{bill.name}}s remaining
+      </h5>
+    </div>
+  </div>
+  <div class="w-50">
+    <div class="row">
+      <h2 class="text-center col-12">Transactions</h2>
+    </div>
+    <div class="row">
+      <h5
+        class=" col-12"
+        *ngFor="let transaction of transactions$ | async">
+        <div
+          class="error"
+          *ngIf="transaction.error">
+          {{transaction.action}}: {{transaction.error}}
+        </div>
+        <div
+          class="success"
+          *ngIf="transaction.bills">
+          dispensed: {{calculateCashValue(transaction.bills)}}
+        </div>
+      </h5>
+    </div>
+  </div>
+</div>

@@ -31,10 +31,10 @@ export interface AtmStateModel {
     remainingAmount: [
       new Bill(BillType.HUNDRED, 100, 10),
       new Bill(BillType.FIFTY, 50, 10),
-      new Bill(BillType.TWENTY, 20, 10),
-      new Bill(BillType.TEN, 10, 10),
-      new Bill(BillType.FIVE, 5, 10),
-      new Bill(BillType.ONE, 1, 10)
+      new Bill(BillType.TWENTY, 20, 3),
+      new Bill(BillType.TEN, 10, 0),
+      new Bill(BillType.FIVE, 5, 0),
+      new Bill(BillType.ONE, 1, 0)
     ],
     transactions: [],
     withdrawalAmount: [],
@@ -66,7 +66,7 @@ export class AtmState {
       );
     } else {
       const billsToDispense = AtmUtility.getBillsForWithdrawal(
-        atmState.remainingAmount,
+        [...atmState.remainingAmount],
         requestedValue
       );
       // check to see if we were able to make change
@@ -78,6 +78,16 @@ export class AtmState {
           })
         );
       } else {
+        const updatedRemainingAmount = atmState.remainingAmount.map(bill => {
+          const billToRemove = billsToDispense.find(
+            billTR => bill.name === billTR.name
+          );
+          if (billToRemove) {
+            bill.amount = bill.amount - billToRemove.amount;
+          }
+          return bill;
+        });
+        ctx.patchState({ remainingAmount: updatedRemainingAmount });
         this.store.dispatch(
           new SubmitTransaction({
             bills: billsToDispense,

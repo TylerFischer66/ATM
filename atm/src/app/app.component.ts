@@ -9,12 +9,4 @@ import { Observable } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  @Select(AtmState) atm$: Observable<AtmStateModel>;
-  constructor(private store: Store) {}
-  ngOnInit(): void {
-    this.atm$.subscribe(atm => {
-      const remainingAmount = [...atm.remainingAmount];
-    });
-  }
-}
+export class AppComponent {}
