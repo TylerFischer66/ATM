@@ -1,5 +1,5 @@
 .atm-screen {
-  min-height: 35vh;
+  min-height: 25vh;
   background-color: lightblue;
   border: 1px solid #888888;
 }
@@ -11,10 +11,11 @@
   border-bottom: 2px solid #888888;
 }
 .atm-header {
+  min-width: 20vh;
   background-color: rgb(180, 180, 180);
 }
 
 .atm-base {
   background-color: rgb(180, 180, 180);
-  height: 45vh;
+  height: 35vh;
 }

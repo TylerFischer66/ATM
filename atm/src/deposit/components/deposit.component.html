@@ -1,1 +1,30 @@
-<p>deposit works!</p>
+<div class="container">
+  <div class="row mt-3">
+    <ng-container *ngIf="!(selectedBill$ |async)">
+      <h2 class="col-12 text-center">
+        Please select a bill type and amount being added.
+      </h2>
+    </ng-container>
+    <ng-container *ngIf="selectedBill$ | async as selectedBill">
+      <h2 class="col-12 text-center">
+        You selected the {{selectedBill.name}} dollar bill.
+      </h2>
+      <h5 class="col-12 text-center">current amount {{selectedBill.amount}}</h5>
+      <h5 class="col-12 text-center">
+        How many {{selectedBill.name}}'s would you like to add? {{depositAmount$ | async}}
+      </h5>
+    </ng-container>
+  </div>
+
+  <div class="row">
+    <div
+      class="col-4 mt-4 text-center"
+      *ngFor="let bill of remainingBills$ | async">
+      <button
+        (click)="selectBill(bill)"
+        class="btn btn-link">
+        {{bill.name}}
+      </button>
+    </div>
+  </div>
+</div>

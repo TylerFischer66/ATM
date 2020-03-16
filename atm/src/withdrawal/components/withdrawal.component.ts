@@ -5,7 +5,12 @@ import { map } from 'rxjs/operators';
 import { AtmUtility } from 'src/shared/services/atm-utility.service';
 import { AtmError } from 'src/shared/models/atm-error.enum';
 import { Bill } from 'src/shared/models/bill-type.model';
-import { ClearWithdrawalSubmission } from 'src/store/actions/atm.actions';
+import {
+  ClearWithdrawalSubmission,
+  SelectPage,
+  ClearDepositSubmission
+} from 'src/store/actions/atm.actions';
+import { Transaction } from 'src/shared/models/transaction.model';
 
 @Component({
   selector: 'app-withdrawal',
@@ -21,6 +26,8 @@ export class WithdrawalComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new ClearWithdrawalSubmission());
+    this.store.dispatch(new ClearDepositSubmission());
+    this.store.dispatch(new SelectPage('withdrawal'));
     this.amount$ = this.store
       .select(state => state.atm.withdrawalAmount)
       .pipe(
@@ -33,12 +40,5 @@ export class WithdrawalComponent implements OnInit {
       .pipe(map(transactions => transactions[transactions.length - 1]));
 
     this.submitted$ = this.store.select(state => state.atm.submitted);
-  }
-  /*
-   * Since a successful result will have be an array of bills
-   * check to see if the length property exist on the object.
-   */
-  noTransactionError(result: Bill[] | AtmError): boolean {
-    return result && result.hasOwnProperty('length');
   }
 }

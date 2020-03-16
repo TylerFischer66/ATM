@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { WithdrawalKeyPress } from 'src/store/actions/atm.actions';
-import { Store } from '@ngxs/store';
-import { AtmState } from 'src/store/atm.state';
+import {
+  WithdrawalKeyPress,
+  DepositKeyPress
+} from 'src/store/actions/atm.actions';
+import { Store, Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
+import { Bill } from 'src/shared/models/bill-type.model';
+import { AtmUtility } from 'src/shared/services/atm-utility.service';
 
 @Component({
   selector: 'app-keypad',
@@ -11,16 +16,48 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./keypad.component.css']
 })
 export class KeypadComponent implements OnInit {
-  hasInput$: Observable<boolean>;
-  constructor(private store: Store) {}
+  hasWithdrawalInput$: Observable<boolean>;
+  hasDepositInput$: Observable<boolean>;
+  @Select(state => state.atm.page) currentPage$: Observable<boolean>;
+  constructor(private store: Store, private activeRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.hasInput$ = this.store
+    this.activeRoute.url.subscribe(x => {});
+    this.hasWithdrawalInput$ = this.store
       .select(state => state.atm.withdrawalAmount)
+      .pipe(map(amount => amount.length > 0));
+    this.hasDepositInput$ = this.store
+      .select(state => state.atm.depositAmount)
       .pipe(map(amount => amount.length > 0));
   }
 
   onKeyPress(key: string | number): void {
-    this.store.dispatch(new WithdrawalKeyPress(key));
+    const currentPage = this.store.selectSnapshot(state => state.atm.page);
+    if (currentPage === 'withdrawal') {
+      this.store.dispatch(new WithdrawalKeyPress(key));
+    }
+    if (currentPage === 'deposit') {
+      if (key === 'submit') {
+        const depositAmount = this.store.selectSnapshot(
+          state => state.atm.depositAmount
+        );
+        const selectedBill = this.store.selectSnapshot(state => state.atm.bill);
+        if (!selectedBill) {
+          return;
+        }
+        this.store.dispatch(
+          new DepositKeyPress(
+            key,
+            new Bill(
+              selectedBill.name,
+              selectedBill.multiplier,
+              AtmUtility.convertWithdrawalAmountToNumber(depositAmount)
+            )
+          )
+        );
+      } else {
+        this.store.dispatch(new DepositKeyPress(key));
+      }
+    }
   }
 }

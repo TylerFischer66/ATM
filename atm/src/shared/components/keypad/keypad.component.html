@@ -17,7 +17,7 @@
   </div>
   <div class="text-start">
     <button
-      [disabled]="!(hasInput$ | async)"
+      [disabled]="!(hasWithdrawalInput$ | async) && !(hasDepositInput$ | async)"
       (click)="onKeyPress('submit')"
       class="btn btn-light action-button">
       submit

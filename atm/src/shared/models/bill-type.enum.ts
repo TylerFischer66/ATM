@@ -1,8 +1,8 @@
 export enum BillType {
-  HUNDRED,
-  FIFTY,
-  TWENTY,
-  TEN,
-  FIVE,
-  ONE
+  HUNDRED = 'one hundred',
+  FIFTY = 'fifty',
+  TWENTY = 'twenty',
+  TEN = 'ten',
+  FIVE = 'five',
+  ONE = 'one'
 }

@@ -8,6 +8,7 @@ export class Bill {
     public name: BillType,
     public multiplier: number,
     public amount: number
+
   ) {}
 
   takeBill(count: number) {

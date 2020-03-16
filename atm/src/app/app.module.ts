@@ -9,13 +9,15 @@ import { WithdrawalComponent } from 'src/withdrawal/components/withdrawal.compon
 import { NavigationComponent } from 'src/shared/components/navigation/navigation.component';
 import { OverviewComponent } from 'src/overview/components/overview.component';
 import { KeypadComponent } from 'src/shared/components/keypad/keypad.component';
+import { DepositComponent } from 'src/deposit/components/deposit.component';
 @NgModule({
   declarations: [
     AppComponent,
     WithdrawalComponent,
     NavigationComponent,
     OverviewComponent,
-    KeypadComponent
+    KeypadComponent,
+    DepositComponent
   ],
   imports: [BrowserModule, AppRoutingModule, [NgxsModule.forRoot([AtmState])]],
   providers: [],

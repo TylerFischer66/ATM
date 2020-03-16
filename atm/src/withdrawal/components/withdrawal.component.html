@@ -4,15 +4,15 @@
     <h3 class="col-12 text-center">{{amount$ | async | currency}}</h3>
   </div>
 </div>
-<ng-container *ngIf="submitted$ | async">
+<ng-container *ngIf="submitted$ | async ">
   <h4
     class="col-12 text-center error"
-    *ngIf="!noTransactionError(latestTransaction$ | async)">
-    there was an error.
+    *ngIf="(latestTransaction$ |async).error as error">
+    {{error}}
   </h4>
-  <ng-container *ngIf="noTransactionError(latestTransaction$ | async)">
+  <ng-container *ngIf="(latestTransaction$ | async).bills">
     <h5 class="col-12 text-center">The Atm is dispensing</h5>
-    <ng-container *ngFor="let billType of latestTransaction$ | async">
+    <ng-container *ngFor="let billType of (latestTransaction$ | async).bills">
       <div
         class="text-center"
         *ngIf="billType.amount > 0">

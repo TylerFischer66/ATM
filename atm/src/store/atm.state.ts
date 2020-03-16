@@ -2,7 +2,11 @@ import {
   Withdrawal,
   SubmitTransaction,
   WithdrawalKeyPress,
-  ClearWithdrawalSubmission
+  ClearWithdrawalSubmission,
+  SelectPage,
+  DepositKeyPress,
+  ClearDepositSubmission,
+  SelectBill
 } from './actions/atm.actions';
 import { State, Action, StateContext, Store } from '@ngxs/store';
 import { Bill } from 'src/shared/models/bill-type.model';
@@ -10,11 +14,15 @@ import { BillType } from 'src/shared/models/bill-type.enum';
 import { AtmUtility } from 'src/shared/services/atm-utility.service';
 import { AtmError } from 'src/shared/models/atm-error.enum';
 import { Injectable } from '@angular/core';
+import { Transaction } from 'src/shared/models/transaction.model';
 export interface AtmStateModel {
   remainingAmount: Bill[];
-  transactions: (Bill[] | AtmError)[];
+  transactions: Transaction[];
   withdrawalAmount: number[];
+  depositAmount: number[];
   submitted: boolean;
+  bill: Bill;
+  page: 'withdrawal' | 'deposit' | 'overview';
 }
 @Injectable()
 @State<AtmStateModel>({
@@ -30,11 +38,15 @@ export interface AtmStateModel {
     ],
     transactions: [],
     withdrawalAmount: [],
-    submitted: false
+    depositAmount: [],
+    submitted: false,
+    bill: null,
+    page: null
   }
 })
 export class AtmState {
   constructor(private store: Store) {}
+
   @Action(Withdrawal)
   withdraw(
     ctx: StateContext<AtmStateModel>,
@@ -46,7 +58,12 @@ export class AtmState {
       !AtmUtility.enoughFundsRemaining(atmState.remainingAmount, requestedValue)
     ) {
       // if not set an error
-      this.store.dispatch(new SubmitTransaction(AtmError.INSUFFICIENT_FUNDS));
+      this.store.dispatch(
+        new SubmitTransaction({
+          error: AtmError.INSUFFICIENT_FUNDS,
+          action: 'withdrawal'
+        })
+      );
     } else {
       const billsToDispense = AtmUtility.getBillsForWithdrawal(
         atmState.remainingAmount,
@@ -55,13 +72,22 @@ export class AtmState {
       // check to see if we were able to make change
       if (!billsToDispense) {
         this.store.dispatch(
-          new SubmitTransaction(AtmError.UNABLE_TO_MAKE_CHANGE)
+          new SubmitTransaction({
+            error: AtmError.UNABLE_TO_MAKE_CHANGE,
+            action: 'withdrawal'
+          })
         );
       } else {
-        this.store.dispatch(new SubmitTransaction(billsToDispense));
+        this.store.dispatch(
+          new SubmitTransaction({
+            bills: billsToDispense,
+            action: 'withdrawal'
+          })
+        );
       }
     }
   }
+
   @Action(SubmitTransaction)
   submitTransaction(
     ctx: StateContext<AtmStateModel>,
@@ -72,10 +98,45 @@ export class AtmState {
     atmState.submitted = true;
     ctx.setState({ ...atmState });
   }
+
   @Action(ClearWithdrawalSubmission)
   clearWithdrawalSubmission(ctx: StateContext<AtmStateModel>) {
-    const atmState = ctx.getState();
     ctx.patchState({ withdrawalAmount: [], submitted: false });
+  }
+
+  @Action(ClearDepositSubmission)
+  clearDepositSubmission(ctx: StateContext<AtmStateModel>) {
+    ctx.patchState({ depositAmount: [], submitted: false });
+  }
+  @Action(DepositKeyPress)
+  depositKeyPress(
+    ctx: StateContext<AtmStateModel>,
+    { key, addedBill }: DepositKeyPress
+  ) {
+    const atmState = ctx.getState();
+    if (key === 'clear') {
+      this.store.dispatch(new ClearDepositSubmission());
+    } else if (key === 'submit') {
+      const updatedRemainingAmount = atmState.remainingAmount.map(bill => {
+        if (bill.name === addedBill.name) {
+          bill.amount = bill.amount + addedBill.amount;
+        }
+        return bill;
+      });
+      this.store.dispatch(
+        new SubmitTransaction({ bills: [addedBill], action: 'deposit' })
+      );
+
+      this.store.dispatch(new ClearDepositSubmission());
+      ctx.patchState({
+        remainingAmount: updatedRemainingAmount,
+        submitted: true
+      });
+    } else {
+      ctx.patchState({
+        depositAmount: [...atmState.depositAmount, Number(key)]
+      });
+    }
   }
 
   @Action(WithdrawalKeyPress)
@@ -97,5 +158,14 @@ export class AtmState {
         withdrawalAmount: [...atmState.withdrawalAmount, Number(key)]
       });
     }
+  }
+  @Action(SelectPage)
+  selectPage(ctx: StateContext<AtmStateModel>, { page }: SelectPage) {
+    ctx.patchState({ page });
+  }
+  @Action(SelectBill)
+  selectBill(ctx: StateContext<AtmStateModel>, { bill }: SelectBill) {
+    ctx.patchState({ bill, submitted: false });
+    this.store.dispatch(new ClearDepositSubmission());
   }
 }
