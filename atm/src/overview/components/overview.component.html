@@ -26,9 +26,11 @@
           {{transaction.action}}: {{transaction.error}}
         </div>
         <div
-          class="success"
+          [ngClass]="{'success': transaction.action === 'withdrawal','info': transaction.action === 'deposit'}"
           *ngIf="transaction.bills">
-          dispensed: {{calculateCashValue(transaction.bills)}}
+          <ng-container *ngIf="transaction.action === 'withdrawal'">dispensed</ng-container>
+          <ng-container *ngIf="transaction.action === 'deposit'">deposited</ng-container>
+          : {{calculateCashValue(transaction.bills)}}
         </div>
       </h5>
     </div>

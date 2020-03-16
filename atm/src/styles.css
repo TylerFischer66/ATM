@@ -3,11 +3,14 @@
   background-image: url(assets/brick-background.jpg);
 }
 h2 {
-  font-size: 16px;
+  font-size: 30px !important;
 }
 .success {
   color: green;
 }
 .error {
   color: red;
+}
+.info {
+  color: purple;
 }
